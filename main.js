@@ -2,9 +2,8 @@ const chatBox = document.getElementById('chat-box');
 const userInput = document.getElementById('user-input');
 const sendBtn = document.getElementById('send-btn');
 
-const GEMINI_API_KEY = 'AIzaSyC0Cjd5U_kIM9tvqxfjjvQ_MlhabjtxA30'; // Ganti dengan API key Anda
+const GEMINI_API_KEY = 'AIzaSyC0Cjd5U_kIM9tvqxfjjvQ_MlhabjtxA30'; 
 
-// Fungsi untuk menambahkan pesan ke chat box
 function addMessage(role, text) {
   const messageDiv = document.createElement('div');
   messageDiv.classList.add('message', role);
@@ -42,18 +41,15 @@ function addMessage(role, text) {
   messageDiv.appendChild(actionButtons);
   chatBox.appendChild(messageDiv);
 
-  // Scroll ke bawah
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// Fungsi untuk menyalin teks
 function copyText(text) {
   navigator.clipboard.writeText(text).then(() => {
     alert('Teks berhasil disalin!');
   });
 }
 
-// Fungsi untuk mengirim pesan ke API Gemini
 async function sendMessageToGemini(message) {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
@@ -73,7 +69,6 @@ async function sendMessageToGemini(message) {
   return data.candidates[0].content.parts[0].text;
 }
 
-// Event listener untuk tombol kirim
 sendBtn.addEventListener('click', async () => {
   const userMessage = userInput.value.trim();
   if (userMessage) {
@@ -89,6 +84,5 @@ sendBtn.addEventListener('click', async () => {
   }
 });
 
-// Tampilkan prompt awal saat halaman dimuat
 addMessage('ai', '👋 Halo! Saya Tarz Bots, asisten AI Anda. Silakan ketik pesan
 Anda di sini.');
