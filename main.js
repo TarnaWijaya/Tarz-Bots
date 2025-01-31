@@ -9,13 +9,12 @@ function addMessage(role, text) {
   messageDiv.classList.add('message', role);
 
   const logo = document.createElement('img');
-  logo.src = role === 'user' ?
-  './img/user.png' : './img/ai.png';
+  logo.src = role === 'user' ? './img/user.png' : './img/ai.png';
   logo.alt = role === 'user' ? 'User Logo' : 'Tarz Bots Logo';
 
   const contentDiv = document.createElement('div');
   contentDiv.classList.add('message-content');
-  contentDiv.innerText = text;
+  contentDiv.innerHTML = role === 'ai' ? marked.parse(text) : text;
 
   const actionButtons = document.createElement('div');
   actionButtons.classList.add('action-buttons');
@@ -48,6 +47,8 @@ function addMessage(role, text) {
 function copyText(text) {
   navigator.clipboard.writeText(text).then(() => {
     alert('Teks berhasil disalin!');
+  }).catch(err => {
+    console.error('Gagal menyalin teks: ', err);
   });
 }
 
