@@ -9,7 +9,7 @@ function addMessage(role, text) {
   messageDiv.classList.add('message', role);
 
   const logo = document.createElement('img');
-  logo.src = role === 'user' ? 'logo-user.png' : 'logo-ai.png';
+  logo.src = role === 'user' ? '../img/user.png' : '../img/ai.png';
   logo.alt = role === 'user' ? 'User Logo' : 'Tarz Bots Logo';
 
   const contentDiv = document.createElement('div');
