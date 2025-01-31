@@ -9,7 +9,10 @@ function addMessage(role, text) {
   messageDiv.classList.add('message', role);
 
   const logo = document.createElement('img');
-  logo.src = role === 'user' ? '../img/user.png' : '../img/ai.png';
+  logo.src = role === 'user' ?
+  'https://github.com/TarnaWijaya/Tarz-Bots/blob/3b7501a5a5dc179fb6cf6a700ef28d71c8f54647/img/user.png'
+  :
+  'https://github.com/TarnaWijaya/Tarz-Bots/blob/3b7501a5a5dc179fb6cf6a700ef28d71c8f54647/img/ai.png';
   logo.alt = role === 'user' ? 'User Logo' : 'Tarz Bots Logo';
 
   const contentDiv = document.createElement('div');
