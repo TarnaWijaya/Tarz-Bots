@@ -51,7 +51,7 @@ function copyText(text) {
 }
 
 async function sendMessageToGemini(message) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${AIzaSyC0Cjd5U_kIM9tvqxfjjvQ_MlhabjtxA30}`;
 
   const response = await fetch(url, {
     method: 'POST',
