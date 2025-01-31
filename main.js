@@ -1,87 +1,94 @@
-// script.js
 const chatBox = document.getElementById('chat-box');
 const userInput = document.getElementById('user-input');
 const sendBtn = document.getElementById('send-btn');
-const GEMINI_API_KEY = 'AIzaSyC0Cjd5U_kIM9tvqxfjjvQ_MlhabjtxA30'; 
 
-function addMessage(role, content) {
+const GEMINI_API_KEY = 'AIzaSyC0Cjd5U_kIM9tvqxfjjvQ_MlhabjtxA30'; // Ganti dengan API key Anda
+
+// Fungsi untuk menambahkan pesan ke chat box
+function addMessage(role, text) {
   const messageDiv = document.createElement('div');
   messageDiv.classList.add('message', role);
 
-  const img = document.createElement('img');
-  img.src = role === 'user' ? '../img/user.png' : '../img/ai.png';
-  img.alt = role === 'user' ? 'User' : 'Tarz Bots';
+  const logo = document.createElement('img');
+  logo.src = role === 'user' ? 'logo-user.png' : 'logo-ai.png';
+  logo.alt = role === 'user' ? 'User Logo' : 'Tarz Bots Logo';
 
   const contentDiv = document.createElement('div');
   contentDiv.classList.add('message-content');
-  contentDiv.textContent = content;
+  contentDiv.innerText = text;
 
-  const actionsDiv = document.createElement('div');
-  actionsDiv.classList.add('message-actions');
-  actionsDiv.innerHTML = `
-    <button onclick="copyText('${content}')">Salin</button>
-    <button onclick="likeMessage()">👍</button>
-    <button onclick="dislikeMessage()">👎</button>
-    <button onclick="editMessage()">✏️</button>
-  `;
+  const actionButtons = document.createElement('div');
+  actionButtons.classList.add('action-buttons');
 
-  messageDiv.appendChild(img);
+  if (role === 'ai') {
+    const copyButton = document.createElement('button');
+    copyButton.innerText = 'Salin';
+    copyButton.onclick = () => copyText(text);
+    actionButtons.appendChild(copyButton);
+
+    const likeButton = document.createElement('button');
+    likeButton.innerText = '👍';
+    likeButton.onclick = () => alert('Anda menyukai respons ini!');
+    actionButtons.appendChild(likeButton);
+
+    const dislikeButton = document.createElement('button');
+    dislikeButton.innerText = '👎';
+    dislikeButton.onclick = () => alert('Anda tidak menyukai respons ini!');
+    actionButtons.appendChild(dislikeButton);
+  }
+
+  messageDiv.appendChild(logo);
   messageDiv.appendChild(contentDiv);
-  messageDiv.appendChild(actionsDiv);
+  messageDiv.appendChild(actionButtons);
   chatBox.appendChild(messageDiv);
+
+  // Scroll ke bawah
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-async function sendMessage() {
-  const userMessage = userInput.value.trim();
-  if (!userMessage) return;
-
-  addMessage('user', userMessage);
-  userInput.value = '';
-
-  try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{ text: userMessage }]
-        }]
-      })
-    });
-
-    const data = await response.json();
-    const botResponse = data.candidates[0].content.parts[0].text;
-    addMessage('bot', botResponse);
-  } catch (error) {
-    addMessage('bot', 'Maaf, terjadi kesalahan. Silakan coba lagi.');
-  }
-}
-
+// Fungsi untuk menyalin teks
 function copyText(text) {
   navigator.clipboard.writeText(text).then(() => {
     alert('Teks berhasil disalin!');
   });
 }
 
-function likeMessage() {
-  alert('Anda menyukai pesan ini!');
+// Fungsi untuk mengirim pesan ke API Gemini
+async function sendMessageToGemini(message) {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      contents: [{
+        parts: [{ text: message }]
+      }]
+    })
+  });
+
+  const data = await response.json();
+  return data.candidates[0].content.parts[0].text;
 }
 
-function dislikeMessage() {
-  alert('Anda tidak menyukai pesan ini!');
-}
+// Event listener untuk tombol kirim
+sendBtn.addEventListener('click', async () => {
+  const userMessage = userInput.value.trim();
+  if (userMessage) {
+    addMessage('user', userMessage);
+    userInput.value = '';
 
-function editMessage() {
-  alert('Fitur edit belum tersedia.');
-}
-
-sendBtn.addEventListener('click', sendMessage);
-userInput.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
+    try {
+      const aiResponse = await sendMessageToGemini(userMessage);
+      addMessage('ai', aiResponse);
+    } catch (error) {
+      addMessage('ai', '⚠️ Maaf, terjadi kesalahan. Silakan coba lagi.');
+    }
   }
 });
+
+// Tampilkan prompt awal saat halaman dimuat
+addMessage('ai', '👋 Halo! Saya Tarz Bots, asisten AI Anda. Silakan ketik pesan
+Anda di sini.');
