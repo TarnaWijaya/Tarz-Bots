@@ -1,6 +1,8 @@
+// script.js
 const chatBox = document.getElementById('chat-box');
 const userInput = document.getElementById('user-input');
 const sendBtn = document.getElementById('send-btn');
+const GEMINI_API_KEY = 'AIzaSyC0Cjd5U_kIM9tvqxfjjvQ_MlhabjtxA30'; 
 
 function addMessage(role, content) {
   const messageDiv = document.createElement('div');
@@ -38,17 +40,21 @@ async function sendMessage() {
   userInput.value = '';
 
   try {
-    const response = await fetch('https://api.gemini.google.com/v1/chat', {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'AIzaSyC0Cjd5U_kIM9tvqxfjjvQ_MlhabjtxA30'
       },
-      body: JSON.stringify({ message: userMessage })
+      body: JSON.stringify({
+        contents: [{
+          parts: [{ text: userMessage }]
+        }]
+      })
     });
 
     const data = await response.json();
-    addMessage('bot', data.response);
+    const botResponse = data.candidates[0].content.parts[0].text;
+    addMessage('bot', botResponse);
   } catch (error) {
     addMessage('bot', 'Maaf, terjadi kesalahan. Silakan coba lagi.');
   }
