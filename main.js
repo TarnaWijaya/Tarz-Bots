@@ -2,7 +2,7 @@ const chatBox = document.getElementById('chat-box');
 const userInput = document.getElementById('user-input');
 const sendBtn = document.getElementById('send-btn');
 
-const GEMINI_API_KEY = 'AIzaSyC0Cjd5U_kIM9tvqxfjjvQ_MlhabjtxA30'; 
+const GEMINI_API_KEY = 'AIzaSyC0Cjd5U_kIM9tvqxfjjvQ_MlhabjtxA30';
 
 function addMessage(role, text) {
   const messageDiv = document.createElement('div');
@@ -51,36 +51,53 @@ function copyText(text) {
 }
 
 async function sendMessageToGemini(message) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${AIzaSyC0Cjd5U_kIM9tvqxfjjvQ_MlhabjtxA30}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      contents: [{
-        parts: [{ text: message }]
-      }]
-    })
-  });
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        contents: [{
+          parts: [{ text: message }]
+        }]
+      })
+    });
 
-  const data = await response.json();
-  return data.candidates[0].content.parts[0].text;
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content.parts[0].text) {
+      throw new Error('Respons dari API tidak valid.');
+    }
+
+    return data.candidates[0].content.parts[0].text;
+  } catch (error) {
+    console.error('Error:', error);
+    throw error;
+  }
 }
 
 sendBtn.addEventListener('click', async () => {
   const userMessage = userInput.value.trim();
-  if (userMessage) {
-    addMessage('user', userMessage);
-    userInput.value = '';
+  if (!userMessage) {
+    alert('Silakan ketik pesan Anda terlebih dahulu.');
+    return;
+  }
 
-    try {
-      const aiResponse = await sendMessageToGemini(userMessage);
-      addMessage('ai', aiResponse);
-    } catch (error) {
-      addMessage('ai', '⚠️ Maaf, terjadi kesalahan. Silakan coba lagi.');
-    }
+  addMessage('user', userMessage);
+  userInput.value = '';
+
+  try {
+    const aiResponse = await sendMessageToGemini(userMessage);
+    addMessage('ai', aiResponse);
+  } catch (error) {
+    addMessage('ai', '⚠️ Maaf, terjadi kesalahan. Silakan coba lagi.');
   }
 });
 
