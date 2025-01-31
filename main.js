@@ -84,5 +84,4 @@ sendBtn.addEventListener('click', async () => {
   }
 });
 
-addMessage('ai', '👋 Halo! Saya Tarz Bots, asisten AI Anda. Silakan ketik pesan
-Anda di sini.');
+addMessage('ai', '👋 Halo! Saya Tarz Bots, asisten AI Anda. Silakan ketik pesan Anda di sini.');
